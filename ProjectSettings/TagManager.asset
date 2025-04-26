@@ -9,6 +9,8 @@ TagManager:
   - SpawnPoint
   - PatrolPoint
   - Enemy
+  - House
+  - Fuel
   layers:
   - Default
   - TransparentFX

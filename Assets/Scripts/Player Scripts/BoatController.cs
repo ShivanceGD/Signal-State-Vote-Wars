@@ -14,14 +14,25 @@ public class BoatController : MonoBehaviour
     private float speedTimer = 0f;
     public float setSpeedTimer = 3f; // How long the upgrade lasts
 
-    //Audio Sources
+    // Audio Sources
     public AudioSource boostSound;
+
+    // Fuel System
+    [Header("Fuel System")]
+    public float maxFuel = 100f;
+    public float currentFuel;
+    public float fuelConsumptionPerUnit = 0.1f; // Fuel consumed per unit of distance
+    private Vector3 lastPosition;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.linearDamping = 1f; // Adds drag to movement
         rb.angularDamping = 2f; // Adds drag to rotation
+
+        // Initialize Fuel
+        currentFuel = maxFuel;
+        lastPosition = transform.position;
     }
 
     private void Update()
@@ -32,13 +43,18 @@ public class BoatController : MonoBehaviour
             speedTimer -= Time.deltaTime;
         }
     }
+
     private void FixedUpdate()
     {
         Move();
+        UpdateFuel();
     }
 
     private void Move()
     {
+        if (currentFuel <= 0)
+            return; // No fuel, no movement
+
         // Determine current speed values based on upgrade
         float currentSpeed = (speedTimer > 0) ? speed + speedIncrease : speed;
         float currentReverseSpeed = (speedTimer > 0) ? reverseSpeed + speedIncrease : reverseSpeed;
@@ -71,6 +87,21 @@ public class BoatController : MonoBehaviour
         rb.linearVelocity = ForwardVelocity() + RightVelocity() * driftFactor;
     }
 
+    private void UpdateFuel()
+    {
+        // Calculate distance traveled since last frame
+        float distance = Vector3.Distance(transform.position, lastPosition);
+
+        // Reduce fuel based on distance
+        currentFuel -= distance * fuelConsumptionPerUnit;
+
+        // Clamp fuel so it doesn't go below 0
+        currentFuel = Mathf.Max(currentFuel, 0f);
+
+        // Update last position
+        lastPosition = transform.position;
+    }
+
     Vector3 ForwardVelocity()
     {
         return transform.forward * Vector3.Dot(rb.linearVelocity, transform.forward);
@@ -92,6 +123,13 @@ public class BoatController : MonoBehaviour
             speedTimer = setSpeedTimer;
 
             PlaySoundOnSpeedBoost();
+            Destroy(other.gameObject);
+        }
+
+        if (other.CompareTag("Fuel"))
+        {
+            Refuel();
+            Destroy(other.gameObject);
         }
     }
 
@@ -105,5 +143,11 @@ public class BoatController : MonoBehaviour
         {
             Debug.Log("No Sound Of Speed Boost");
         }
+    }
+
+    void Refuel()
+    {
+        currentFuel = maxFuel;
+        Debug.Log("Fuel Refilled!");
     }
 }
