@@ -36,10 +36,11 @@ public class EnemyMover : MonoBehaviour
     private int patrolsRemaining;
 
     private Vector3 scrambledTarget;
-
+    public GameManager gamemanager;
     // New variables for "kill if near" logic
     private float nearPlayerTimer = 0f;
     private bool playerIsDead = false;
+    public static bool isGameOver = false;
 
     void Start()
     {
@@ -161,7 +162,10 @@ public class EnemyMover : MonoBehaviour
         playerIsDead = true;
 
         // Example action: destroy the player GameObject
-        Destroy(player.gameObject);
+        //Destroy(player.gameObject);
+        isGameOver = true;
+        gamemanager.EndGame();
+        
 
         // Or trigger a "PlayerDead" animation, screen effect, GameOver panel etc
     }

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private float timer;
 
     public GameObject LevelCompletePanel;
-    public GameObject LevelOverPanel;
+    public GameObject GameOverPanel;
     private BoatController boatController;
     public string NextLevel;
 
@@ -105,15 +105,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void EndGame()
+   public  void EndGame()
     {
         Debug.Log("Level Timer Ended!");
+        GameOver();
         // You can add endgame screen or logic here
+    }
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     void LevelCompleted()
     {
-
-        LevelCompletePanel.setActive(true);
+        EnemyMover[] enemies = FindObjectsByType<EnemyMover>(FindObjectsSortMode.None);
+        foreach (EnemyMover enemy in enemies)
+        {
+            Destroy(enemy.gameObject);
+        }
+        //LevelCompletePanel.SetActive(true);
+        Nextlevel();
+    }
+    void GameOver()
+    {
+        MainMenuButton();
     }
     public void Nextlevel()
     {

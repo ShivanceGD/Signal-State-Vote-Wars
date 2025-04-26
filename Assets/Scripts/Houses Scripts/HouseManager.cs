@@ -82,7 +82,7 @@ public class HouseManager : MonoBehaviour
             if (ringsObject != null)
                 ringsObject.SetActive(true);
         }
-        
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -92,6 +92,8 @@ public class HouseManager : MonoBehaviour
             playerNearby = false;
             if (ringsObject != null)
                 ringsObject.SetActive(false);
+
+            BoatController.canPlaySpeech = false;
         }
 
     }

@@ -24,6 +24,10 @@ public class BoatController : MonoBehaviour
     public float fuelConsumptionPerUnit = 0.1f; // Fuel consumed per unit of distance
     private Vector3 lastPosition;
 
+
+    public AudioSource[] Speeches;
+    public static bool canPlaySpeech;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -60,13 +64,13 @@ public class BoatController : MonoBehaviour
         float currentReverseSpeed = (speedTimer > 0) ? reverseSpeed + speedIncrease : reverseSpeed;
 
         // Forward movement
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W)&& !EnemyMover.isGameOver)
         {
             rb.AddForce(transform.forward * currentSpeed);
         }
 
         // Reverse movement
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S) && !EnemyMover.isGameOver)
         {
             if (speedTimer < 0)
             {
@@ -130,6 +134,17 @@ public class BoatController : MonoBehaviour
         {
             Refuel();
             Destroy(other.gameObject);
+        }
+
+        if (other.CompareTag("House"))
+        {
+            canPlaySpeech = true;
+            if (canPlaySpeech)
+            {
+
+                
+                Speeches[0].Play();
+            }
         }
     }
 
