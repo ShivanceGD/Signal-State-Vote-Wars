@@ -83,12 +83,12 @@ public class EnemySpawner : MonoBehaviour
     {
         foreach (var wantedLevel in WantedLevels)
         {
-            if (GameVariables.Notoriety >= wantedLevel.RangeLow &&
+            /*if (GameVariables.Notoriety >= wantedLevel.RangeLow &&
                 GameVariables.Notoriety <= wantedLevel.RangeHigh)
             {
                 currentWantedLevel = wantedLevel;
                 break;
-            }
+            }*/
         }
     }
 
