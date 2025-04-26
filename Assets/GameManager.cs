@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     public float levelDuration = 300f; // 5 minutes = 300 seconds
     private float timer;
 
+    public GameObject LevelCompletePanel;
+    public GameObject LevelOverPanel;
     private BoatController boatController;
     public string NextLevel;
 
@@ -109,6 +111,11 @@ public class GameManager : MonoBehaviour
         // You can add endgame screen or logic here
     }
     void LevelCompleted()
+    {
+
+        LevelCompletePanel.setActive(true);
+    }
+    public void Nextlevel()
     {
         SceneManager.LoadScene(NextLevel);
     }
