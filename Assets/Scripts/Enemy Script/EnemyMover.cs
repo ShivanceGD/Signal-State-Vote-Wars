@@ -37,6 +37,10 @@ public class EnemyMover : MonoBehaviour
 
     private Vector3 scrambledTarget;
 
+    // New variables for "kill if near" logic
+    private float nearPlayerTimer = 0f;
+    private bool playerIsDead = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -50,9 +54,7 @@ public class EnemyMover : MonoBehaviour
             return;
         }
 
-        // Randomly select one patrol point as the base point
         basePoint = patrolPoints[Random.Range(0, patrolPoints.Length)];
-
         patrolsRemaining = Random.Range(minPatrols, maxPatrols);
         PickNewPatrolTarget();
     }
@@ -67,6 +69,8 @@ public class EnemyMover : MonoBehaviour
             return;
         }
 
+        if (player == null || playerIsDead) return; // Don't continue if player is dead or missing
+
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= chaseRange)
@@ -80,12 +84,27 @@ public class EnemyMover : MonoBehaviour
                 audioSource.clip = chaseSound;
                 audioSource.Play();
             }
+
+            // Check if close enough to "kill"
+            if (distanceToPlayer <= 2.1f)
+            {
+                nearPlayerTimer += Time.deltaTime;
+                if (nearPlayerTimer >= 2f)
+                {
+                    KillPlayer();
+                }
+            }
+            else
+            {
+                nearPlayerTimer = 0f; // Reset if moves away
+            }
         }
         else if (chasingPlayer)
         {
             chasingPlayer = false;
             timeStoppedChasing = Time.time;
-            audioSource.Stop(); // Stop sound when player is out of range
+            audioSource.Stop();
+            nearPlayerTimer = 0f;
         }
 
         if (!chasingPlayer && Time.time - timeStoppedChasing > chaseCooldown)
@@ -98,7 +117,7 @@ public class EnemyMover : MonoBehaviour
 
         if (returningToBase && ReachedDestination(basePoint.position))
         {
-            Destroy(gameObject, 1f); // Simulate successful return
+            Destroy(gameObject, 1f);
         }
     }
 
@@ -134,5 +153,16 @@ public class EnemyMover : MonoBehaviour
         scrambleStartTime = Time.time;
         Vector3 directionAway = (transform.position - player.position).normalized;
         scrambledTarget = transform.position + directionAway * 20f;
+    }
+
+    private void KillPlayer()
+    {
+        Debug.Log("Player died!");
+        playerIsDead = true;
+
+        // Example action: destroy the player GameObject
+        Destroy(player.gameObject);
+
+        // Or trigger a "PlayerDead" animation, screen effect, GameOver panel etc
     }
 }

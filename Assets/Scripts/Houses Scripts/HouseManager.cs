@@ -2,9 +2,12 @@ using UnityEngine;
 
 public class HouseManager : MonoBehaviour
 {
+    public GameObject ringsObject;
     private bool hasDecided = false;
     private bool playerNearby = false;
 
+    public Material GreenMaterial;
+    public Material RedMaterial;
     private float influenceTimer;
     private float influenceDuration;
 
@@ -14,18 +17,8 @@ public class HouseManager : MonoBehaviour
     public static int VoteCount = 0;
 
     [Header("Sounds")]
-    public AudioClip successSound;  // Drag your "influenced" sound here
-    public AudioClip failSound;     // Drag your "resisted" sound here
-    private AudioSource audioSource;
-
-    private void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>(); // Add one if missing
-        }
-    }
+    public GameObject successSoundObject;  // Assign GameObject that has AudioSource with success clip
+    public GameObject failSoundObject;     // Assign GameObject that has AudioSource with fail clip
 
     private void Update()
     {
@@ -48,14 +41,14 @@ public class HouseManager : MonoBehaviour
         {
             VoteCount++;
             Debug.Log($"{gameObject.name} influenced! Total Votes: {VoteCount}");
-
-            PlaySound(successSound);
+            ringsObject.GetComponent<MeshRenderer>().material.color = Color.green;
+            PlaySound(successSoundObject);
         }
         else
         {
             Debug.Log($"{gameObject.name} resisted influence.");
-
-            PlaySound(failSound);
+            ringsObject.GetComponent<MeshRenderer>().material.color = Color.red;
+            PlaySound(failSoundObject);
         }
     }
 
@@ -65,28 +58,41 @@ public class HouseManager : MonoBehaviour
         influenceTimer = influenceDuration;
     }
 
-    private void PlaySound(AudioClip clip)
+    private void PlaySound(GameObject soundObject)
     {
-        if (clip != null && audioSource != null)
+        if (soundObject != null)
         {
-            audioSource.PlayOneShot(clip);
+            AudioSource source = soundObject.GetComponent<AudioSource>();
+            if (source != null)
+            {
+                source.Play();
+            }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !hasDecided)
+        if (other.CompareTag("Influence") && !hasDecided)
         {
             playerNearby = true;
             ResetInfluenceTimer();
         }
+        if (other.CompareTag("Influence"))
+        {
+            if (ringsObject != null)
+                ringsObject.SetActive(true);
+        }
+        
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Influence"))
         {
             playerNearby = false;
+            if (ringsObject != null)
+                ringsObject.SetActive(false);
         }
+
     }
 }

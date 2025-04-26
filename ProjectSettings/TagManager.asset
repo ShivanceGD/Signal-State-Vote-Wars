@@ -4,13 +4,13 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Infuence
   - Speed
   - SpawnPoint
   - PatrolPoint
   - Enemy
   - House
   - Fuel
+  - Influence
   layers:
   - Default
   - TransparentFX
